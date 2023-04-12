@@ -94,6 +94,30 @@ class InventoryViewModel(private val itemDao: ItemDao) : ViewModel() {
             itemDao.delete(item)
         }
     }
+
+    private fun getUpdateItemEntry(
+        itemId: Int,
+        itemName: String,
+        itemPrice: String,
+        itemCount: String
+    ): Item {
+        return Item(
+            id = itemId,
+            itemName = itemName,
+            itemPrice = itemPrice.toDouble(),
+            quantityInStock = itemCount.toInt()
+        )
+    }
+
+    fun updateItem(
+        itemId: Int,
+        itemName: String,
+        itemPrice: String,
+        itemCount: String
+    ) {
+        val updatedItem = getUpdateItemEntry(itemId, itemName, itemPrice, itemCount)
+        updateItem(updatedItem)
+    }
 }
 
 /**

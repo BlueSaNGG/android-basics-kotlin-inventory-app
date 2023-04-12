@@ -84,7 +84,19 @@ class ItemDetailFragment : Fragment() {
             deleteItem.setOnClickListener {
                 showConfirmationDialog()
             }
+            editItem.setOnClickListener {
+                //reuse the add item screen
+                editItem()
+            }
         }
+    }
+
+    private fun editItem() {
+        val action = ItemDetailFragmentDirections.actionItemDetailFragmentToAddItemFragment(
+            getString(R.string.edit_fragment_title),
+            item.id
+        )
+        findNavController().navigate(action)
     }
 
     /**
