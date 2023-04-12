@@ -33,7 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
  * [ItemDetailFragment] displays the details of the selected item.
  */
 class ItemDetailFragment : Fragment() {
-    private val viewMode: InventoryViewModel by activityViewModels {
+    private val viewModel: InventoryViewModel by activityViewModels {
         InventoryViewModelFactory(
             (activity?.application as InventoryApplication).database.itemDao()
         )
@@ -70,11 +70,20 @@ class ItemDetailFragment : Fragment() {
             .show()
     }
 
+    // bind all UI to the data
+    // observable item calls the bind, so it would update when item changes
     private fun bind(item: Item) {
         binding.apply {
             itemName.text = item.itemName
             itemPrice.text = item.getFormattedPrice()
             itemCount.text = item.quantityInStock.toString()
+            sellItem.setOnClickListener {
+                viewModel.sellItem(item)
+            }
+            sellItem.isEnabled = viewModel.isStockAvailable(item)
+            deleteItem.setOnClickListener {
+                showConfirmationDialog()
+            }
         }
     }
 
@@ -82,13 +91,14 @@ class ItemDetailFragment : Fragment() {
      * Deletes the current item and navigates to the list fragment.
      */
     private fun deleteItem() {
+        viewModel.deleteItem(item)
         findNavController().navigateUp()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.itemId
-        viewMode.retrieveItem(id).observe(this.viewLifecycleOwner) { selectedItem ->
+        viewModel.retrieveItem(id).observe(this.viewLifecycleOwner) { selectedItem ->
             item = selectedItem
             bind(item)
         }
